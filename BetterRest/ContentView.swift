@@ -8,7 +8,7 @@ import CoreML
 import SwiftUI
 
 struct ContentView: View {
-    @State private var wakeUp = Date.now
+    @State private var wakeUp = defaultWakeTime
     @State private var sleepAmount = 8.0
     @State private var coffeeAmount = 1
     
@@ -16,35 +16,39 @@ struct ContentView: View {
     @State private var alertMessage = ""
     @State private var showingAlert = false
     
-    
-//    func exampleDates() {
-//        // create a second Date instamnce set to one day in seconds from now
-//        let tomorrow = Date.now.addingTimeInterval(86400)
-//        
-//        // create a range from these two
-//        let range = Date.now...tomorrow
-//    }
+    static var defaultWakeTime: Date {
+        var components = DateComponents()
+        components.hour = 7
+        components.minute = 0
+        return Calendar.current.date(from: components) ?? .now
+    }
     
     var body: some View {
         
         NavigationStack {
-            VStack {
-                Text("When do you want to wake up?")
-                    .font(.headline)
+            Form {
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("When do you want to wake up?")
+                        .font(.headline)
+                    
+                    DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
+                        .labelsHidden()
+                }
+                                
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Desired amount of sleep")
+                        .font(.headline)
+                    
+                    Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
+                }
                 
-                DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
-                    .labelsHidden()
-                
-                Text("Desired amount of sleep")
-                    .font(.headline)
-                
-                Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
-                
-                Text("Daily coffee intake")
-                    .font(.headline)
-                
-                Stepper("\(coffeeAmount) \(coffeeAmount <= 1 ? "cup" : "cups")", value: $coffeeAmount, in: 1...20, step: 1)
-                    .font(.headline)
+                VStack(alignment: .leading, spacing: 0) {
+                    Text("Daily coffee intake")
+                        .font(.headline)
+                    
+                    Stepper("^[\(coffeeAmount) cup](inflect: true)", value: $coffeeAmount, in: 1...20, step: 1)
+                        .font(.headline)
+                }
             }
             .navigationTitle("BetterRest")
             .toolbar {
@@ -57,7 +61,6 @@ struct ContentView: View {
             }
         }
     }
-        
     
     func calculateBedTime() {
         do {
