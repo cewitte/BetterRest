@@ -4,6 +4,7 @@
 //
 //  Created by Carlos Eduardo Witte on 07/07/24.
 //
+
 import CoreML
 import SwiftUI
 
@@ -27,7 +28,7 @@ struct ContentView: View {
         
         NavigationStack {
             Form {
-                VStack(alignment: .leading, spacing: 0) {
+                Section {
                     Text("When do you want to wake up?")
                         .font(.headline)
                     
@@ -35,19 +36,27 @@ struct ContentView: View {
                         .labelsHidden()
                 }
                                 
-                VStack(alignment: .leading, spacing: 0) {
+                Section {
                     Text("Desired amount of sleep")
                         .font(.headline)
                     
                     Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
                 }
                 
-                VStack(alignment: .leading, spacing: 0) {
+                Section {
                     Text("Daily coffee intake")
                         .font(.headline)
                     
-                    Stepper("^[\(coffeeAmount) cup](inflect: true)", value: $coffeeAmount, in: 1...20, step: 1)
-                        .font(.headline)
+// replaced Stepper with Picker below
+//                    Stepper("^[\(coffeeAmount) cup](inflect: true)", value: $coffeeAmount, in: 1...20, step: 1)
+//                        .font(.headline)
+                    
+                    Picker("^[\(coffeeAmount) cup](inflect: true)", selection: $coffeeAmount){
+                        ForEach(0..<21, id: \.self){
+                            Text($0, format: .number)
+                        }
+                    }
+                   
                 }
             }
             .navigationTitle("BetterRest")
